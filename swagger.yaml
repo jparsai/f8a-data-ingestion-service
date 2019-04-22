@@ -1,0 +1,78 @@
+swagger: '2.0'
+info:
+  title: API for Ingestion & Invoking Worker Flow
+  version: '0.1'
+basePath: /api/v1/
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /liveness:
+    get:
+      tags:
+        - Service settings
+      operationId: f8a_admin.api_v1.get_liveness
+      summary: Get job service liveness
+      responses:
+        '200':
+          description: Service is alive
+  /readiness:
+    get:
+      tags:
+        - Service settings
+      operationId: f8a_admin.api_v1.get_readiness
+      summary: Get job service readiness
+      responses:
+        '200':
+          description: Service is ready
+  /worker-flow/{flow-name}:
+    post:
+      tags:
+        - Worker Flow
+      operationId: f8a_scanner.api_v1.worker_flow
+      summary: Invoke and start a worker flow
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Data for the worker flow"
+        required: true
+        schema:
+          $ref: "#/definitions/WorkerJson"
+      - in: path
+        name: flow-name
+        description: name fo the worker flow that needs to be invoked
+        required: true
+        type: string
+
+      responses:
+        '202':
+          schema:
+            $ref: "#/definitions/WorkerResponse"
+          description: Worker Flow Invoked
+        '400':
+          description: Bad request from the client
+        '401':
+          description: Request unauthorized
+        '500':
+          description: Internal server error
+
+definitions:
+  WorkerJson:
+    title: Data to invoke the worker flow
+    description: Data to invoke the worker flow
+    properties:
+      worker-data:
+        type: object
+  WorkerResponse:
+    title: Worker invocation call response
+    description: Response structure for worker invocation
+    properties:
+      status:
+        type: string
+      submitted_at:
+        type: string
