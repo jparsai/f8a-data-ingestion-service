@@ -7,6 +7,9 @@ import flask
 import logging
 from flask import Flask, request, current_app
 from flask_cors import CORS
+from f8a_worker.setup_celery import init_celery
+from selinon import run_flow
+import datetime
 
 
 def setup_logging(flask_app):
@@ -40,6 +43,40 @@ def liveness():
     """Handle GET requests that are sent to /api/v1/liveness REST API endpoint."""
     current_app.logger.debug('/liveness called')
     return flask.jsonify({}), 200
+
+
+@app.route('/api/v1/worker-flow/<flow_name>', methods=['POST'])
+def worker_flow(flow_name):
+    """Handle POST requests that are sent to /api/v1/worker-flow/{flow-name} REST API endpoint."""
+    current_app.logger.info('/worker-flow/{p} called'.format(p=flow_name))
+    print("Called worker-flow API")
+    input_json = request.get_json()
+    resp = {
+        "id": "",
+        "submitted_at": "",
+        "status": ""
+    }
+    print("Input---->", input_json)
+    if input_json and 'worker-data' in input_json:
+        start = datetime.datetime.now()
+
+        init_celery(result_backend=False)
+        flow_args = input_json['worker-data']
+        dispacher_id = run_flow(flow_name, flow_args)
+        resp['id'] = dispacher_id
+        resp['submitted_at'] = start
+        resp['status'] = "Flow Initiated"
+
+        # compute the elapsed time
+        elapsed_seconds = (datetime.datetime.now() - start).total_seconds()
+        current_app.logger.debug("It took {t} seconds to start {f} flow.".format(
+            t=elapsed_seconds, f=flow_name))
+    else:
+        current_app.logger.debug('Incorrect data sent for the POST call: {p}'.format(p=input_json))
+        return flask.jsonify({"message": "Incorrect data sent"}), 400
+
+    print(resp)
+    return flask.jsonify(resp), 200
 
 
 if __name__ == "__main__":
