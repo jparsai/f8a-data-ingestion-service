@@ -18,7 +18,8 @@ def setup_logging(flask_app):
         handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter(
             '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'))
-        log_level = os.environ.get('FLASK_LOGGING_LEVEL', logging.getLevelName(logging.WARNING))
+        log_level = os.environ.get('FLASK_LOGGING_LEVEL',
+                                   logging.getLevelName(logging.WARNING))
         handler.setLevel(log_level)
 
         flask_app.logger.addHandler(handler)
@@ -33,21 +34,24 @@ CORS(app)
 
 @app.route('/api/v1/readiness')
 def readiness():
-    """Handle GET requests that are sent to /api/v1/readiness REST API endpoint."""
+    """Handle GET requests that are sent to
+    /api/v1/readiness REST API endpoint."""
     current_app.logger.debug('/readiness called')
     return flask.jsonify({}), 200
 
 
 @app.route('/api/v1/liveness')
 def liveness():
-    """Handle GET requests that are sent to /api/v1/liveness REST API endpoint."""
+    """Handle GET requests that are sent to
+    /api/v1/liveness REST API endpoint."""
     current_app.logger.debug('/liveness called')
     return flask.jsonify({}), 200
 
 
 @app.route('/api/v1/worker-flow/<flow_name>', methods=['POST'])
 def worker_flow(flow_name):
-    """Handle POST requests that are sent to /api/v1/worker-flow/{flow-name} REST API endpoint."""
+    """Handle POST requests that are sent to
+    /api/v1/worker-flow/{flow-name} REST API endpoint."""
     current_app.logger.info('/worker-flow/{p} called'.format(p=flow_name))
     input_json = request.get_json()
     resp = {
@@ -65,18 +69,24 @@ def worker_flow(flow_name):
             dispacher_id = run_flow(flow_name, flow_args)
 
             resp['id'] = dispacher_id.id
-            resp['submitted_at'] = start.strftime("%d-%m-%Y, %H:%M:%S")
+            resp['submitted_at'] = start.strftime("%d-%m-%Y, "
+                                                  "%H:%M:%S")
             resp['status'] = "Flow Initiated"
 
             # compute the elapsed time
             elapsed_seconds = (datetime.datetime.now() - start).total_seconds()
-            current_app.logger.debug("It took {t} seconds to start {f} flow.".format(
-                t=elapsed_seconds, f=flow_name))
+            current_app.logger.debug(
+                "It took {t} seconds to start {f} flow.".format(
+                    t=elapsed_seconds, f=flow_name))
         except Exception as e:
-            current_app.logger.error("Exception while initiating the worker flow --> {}".format(e))
-            return flask.jsonify({'message': 'Failed to initiate worker flow'}), 500
+            current_app.logger.error(
+                "Exception while initiating the worker flow --> {}"
+                .format(e))
+            return flask.jsonify(
+                {'message': 'Failed to initiate worker flow'}), 500
     else:
-        current_app.logger.debug('Incorrect data sent for the POST call: {p}'.format(p=input_json))
+        current_app.logger.debug('Incorrect data sent for the POST call: {p}'
+                                 .format(p=input_json))
         return flask.jsonify({"message": "Incorrect data sent"}), 400
 
     return flask.jsonify(resp), 200

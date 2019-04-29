@@ -30,6 +30,8 @@ objects:
                 key: deployment-prefix
           - name: PGBOUNCER_SERVICE_HOST
             value: bayesian-pgbouncer
+          - name: PGBOUNCER_SERVICE_PORT
+            value: "5432"
           - name: BAYESIAN_FETCH_PUBLIC_KEY
             valueFrom:
               configMapKeyRef:
