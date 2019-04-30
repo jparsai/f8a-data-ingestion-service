@@ -61,13 +61,9 @@ def worker_flow(flow_name):
     }
     if input_json and 'worker-data' in input_json:
         start = datetime.datetime.now()
-
-        init_celery(result_backend=False)
-        init_selinon()
         flow_args = input_json['worker-data']
         try:
-            dispacher_id = run_flow(flow_name, flow_args)
-
+            dispacher_id = run_server_flow(flow_name, flow_args)
             resp['id'] = dispacher_id.id
             resp['submitted_at'] = start.strftime("%d-%m-%Y, "
                                                   "%H:%M:%S")
@@ -90,6 +86,12 @@ def worker_flow(flow_name):
         return flask.jsonify({"message": "Incorrect data sent"}), 400
 
     return flask.jsonify(resp), 200
+
+
+def run_server_flow(flow_name, flow_args):
+    init_celery(result_backend=False)
+    init_selinon()
+    return run_flow(flow_name, flow_args)
 
 
 if __name__ == "__main__":

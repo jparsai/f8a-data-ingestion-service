@@ -1,21 +1,10 @@
 version: "2"
 services:
-  broker:
-    image: registry.centos.org/centos/rabbitmq
-    container_name: coreapi-broker
-    ports:
-     - "5672:5672"
-     - "15672:15672"
-    environment:
-      RABBITMQ_USER: guest
-      RABBITMQ_PASS: guest
   f8a-ingestion-api:
     build:
       context: .
     entrypoint:
       - /bin/entrypoint.sh
-    depends_on:
-      - broker
     environment:
       PGBOUNCER_SERVICE_HOST: "bayesian-pgbouncer"
       PGBOUNCER_SERVICE_PORT: "5432"
@@ -23,7 +12,7 @@ services:
       POSTGRESQL_PASSWORD: "password"
       POSTGRESQL_DATABASE: "dbname"
       API_INGESTION_SERVICE_TIMEOUT: "60"
-      WORKER_COUNT: "2"
+      WORKER_COUNT: "1"
       CLASS_TYPE: "sync"
       FLASK_LOGGING_LEVEL: "DEBUG"
       SENTRY_DSN: ""

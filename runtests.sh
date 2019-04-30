@@ -2,6 +2,35 @@
 
 COVERAGE_THRESHOLD=60
 
+export TERM=xterm
+TERM=${TERM:-xterm}
+
+# set up terminal colors
+NORMAL=$(tput sgr0)
+RED=$(tput bold && tput setaf 1)
+GREEN=$(tput bold && tput setaf 2)
+YELLOW=$(tput bold && tput setaf 3)
+
+printf "%sShutting down docker-compose ..." "${NORMAL}"
+
+gc() {
+  retval=$?
+  docker-compose -f docker-compose.yml down -v || :
+  exit $retval
+}
+trap gc EXIT SIGINT
+
+# Enter local-setup/ directory
+# Run local instances for: dynamodb, gremlin-websocket, gremlin-http
+function start_ingestion_service {
+    #pushd local-setup/
+    echo "Invoke Docker Compose services"
+    docker-compose -f docker-compose.yml up  --build --force-recreate -d
+    #popd
+}
+
+start_ingestion_service
+
 PYTHONPATH=$(pwd)/src
 export PYTHONPATH
 
@@ -30,7 +59,8 @@ prepare_venv
 pip3 install -r requirements.txt
 pip3 install git+https://github.com/fabric8-analytics/fabric8-analytics-worker.git@d403113
 pip3 install git+https://github.com/fabric8-analytics/fabric8-analytics-auth.git@fff8f49
-
+pip3 install radon==3.0.1
+pip3 install pytest-flask
 
 echo "*****************************************"
 echo "*** Cyclomatic complexity measurement ***"

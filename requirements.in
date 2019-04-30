@@ -6,3 +6,4 @@ sqlalchemy
 codecov
 gevent
 pytest
+pytest-cov
