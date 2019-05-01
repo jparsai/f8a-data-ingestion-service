@@ -34,24 +34,21 @@ CORS(app)
 
 @app.route('/api/v1/readiness')
 def readiness():
-    """Handle GET requests that are sent to
-    /api/v1/readiness REST API endpoint."""
+    """Handle GET requests for /api/v1/readiness REST API."""
     current_app.logger.debug('/readiness called')
     return flask.jsonify({}), 200
 
 
 @app.route('/api/v1/liveness')
 def liveness():
-    """Handle GET requests that are sent to
-    /api/v1/liveness REST API endpoint."""
+    """Handle GET requests for /api/v1/liveness REST API."""
     current_app.logger.debug('/liveness called')
     return flask.jsonify({}), 200
 
 
 @app.route('/api/v1/worker-flow/<flow_name>', methods=['POST'])
 def worker_flow(flow_name):
-    """Handle POST requests that are sent to
-    /api/v1/worker-flow/{flow-name} REST API endpoint."""
+    """Handle POST requests for /api/v1/worker-flow/{flow-name} REST API."""
     current_app.logger.info('/worker-flow/{p} called'.format(p=flow_name))
     input_json = request.get_json()
     resp = {
@@ -89,6 +86,7 @@ def worker_flow(flow_name):
 
 
 def run_server_flow(flow_name, flow_args):
+    """To run the worker flow via selinon."""
     init_celery(result_backend=False)
     init_selinon()
     return run_flow(flow_name, flow_args)

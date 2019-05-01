@@ -2,8 +2,6 @@
 
 import json
 from unittest import mock
-import requests
-
 
 blank_data = {}
 payload_data = {
@@ -12,7 +10,7 @@ payload_data = {
 
 
 class Dispatcher:
-    """Mocked Dispatcher object class"""
+    """Mocked Dispatcher object class."""
 
     def __init__(self, id):
         """Create a mock json response."""
