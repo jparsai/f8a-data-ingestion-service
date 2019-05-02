@@ -1,0 +1,23 @@
+version: "2"
+services:
+  f8a-ingestion-api:
+    build:
+      context: .
+    entrypoint:
+      - /bin/entrypoint.sh
+    environment:
+      PGBOUNCER_SERVICE_HOST: "bayesian-pgbouncer"
+      PGBOUNCER_SERVICE_PORT: "5432"
+      POSTGRESQL_USER: "user"
+      POSTGRESQL_PASSWORD: "password"
+      POSTGRESQL_DATABASE: "dbname"
+      API_INGESTION_SERVICE_TIMEOUT: "60"
+      WORKER_COUNT: "1"
+      CLASS_TYPE: "sync"
+      FLASK_LOGGING_LEVEL: "DEBUG"
+      SENTRY_DSN: ""
+      DEPLOYMENT_PREFIX: "test"
+      WORKER_ADMINISTRATION_REGION: "api"
+
+    ports:
+      - "5000:5000"
