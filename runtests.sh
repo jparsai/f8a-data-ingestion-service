@@ -10,6 +10,7 @@ NORMAL=$(tput sgr0)
 RED=$(tput bold && tput setaf 1)
 GREEN=$(tput bold && tput setaf 2)
 YELLOW=$(tput bold && tput setaf 3)
+export DISABLE_AUTHENTICATION=1
 
 printf "%sShutting down docker-compose ..." "${NORMAL}"
 
